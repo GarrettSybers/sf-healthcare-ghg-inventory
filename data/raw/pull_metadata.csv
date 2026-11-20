@@ -1,0 +1,8 @@
+"item","value"
+"download_date","2026-11-20"
+"api_endpoint","https://data.sfgov.org/resource/96ck-qcfe.json"
+"where_clause","benchmark_year='2024' AND category in ('Hospital (General Medical & Surgical)','Urgent Care/Clinic/Other Outpatient','Medical Office')"
+"rows_all_healthcare","43"
+"buildings_all_healthcare","43"
+"rows_scoped","30"
+"buildings_scoped","30"

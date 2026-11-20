@@ -1,0 +1,9 @@
+"metric","value"
+"n_buildings_total",30
+"n_buildings_calculable",25
+"n_buildings_excluded",5
+"scope1_co2e_mt",17929.4
+"scope2_co2e_mt",14813.2
+"total_calculated_co2e_mt",32742.6
+"total_epa_estimated_co2e_mt",34641.9
+"portfolio_diff_pct",-5.48
