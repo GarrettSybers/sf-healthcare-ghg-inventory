@@ -1,13 +1,10 @@
 # 01_download_data.R
-# Pull San Francisco Existing Buildings Energy Performance Ordinance Report
-# (DataSF resource 96ck-qcfe) for the healthcare-building subset, FY2024.
+# Downloads 2024 benchmarking data for SF healthcare buildings from DataSF
+# (resource 96ck-qcfe) and selects the 30 buildings in the inventory.
 #
-# Note on source structure: DataSF's documentation describes this dataset as
-# two linked views (Basic Info/Audit Compliance, and Benchmark Reports) that
-# are joined on parcel number. As of this pull (2026-11-20), both views are
-# published as a single consolidated resource (96ck-qcfe) with one row per
-# building per benchmark year, so no separate join step is required. This is
-# recorded here because it changes step 2 of the planned method.
+# DataSF describes this dataset as two tables joined on parcel number. When
+# pulled on 2026-11-20 they were already merged, one row per building per
+# year, so no join is needed.
 
 library(httr)
 library(jsonlite)
@@ -23,8 +20,7 @@ healthcare_categories <- c(
   "Medical Office"
 )
 
-reporting_year <- "2024"  # most recent complete reporting year as of pull date;
-                          # 2025 rows exist but are still being submitted/finalized
+reporting_year <- "2024"  # 2025 reports were still coming in at the pull date
 
 download_date <- Sys.Date()
 
@@ -43,20 +39,16 @@ cat(sprintf("Rows pulled for FY%s healthcare categories: %d\n", reporting_year, 
 cat(sprintf("Distinct buildings (parcel_number): %d\n", length(unique(raw_df$parcel_number))))
 print(table(raw_df$category))
 
-# Drop the nested 'point' geometry column (list-column); keep flat lat/long,
-# which the API already returns as separate scalar fields.
+# The API returns location as a nested column, which write.csv can't handle.
+# Latitude and longitude also come as plain columns, so the nested one is dropped.
 raw_df <- raw_df[, !names(raw_df) %in% "point"]
 raw_df <- raw_df[, !sapply(raw_df, is.list)]
 
 write.csv(raw_df, "data/raw/healthcare_benchmark_fy2024_all.csv", row.names = FALSE)
 
-# Scope selection: brief calls for 10-30 buildings. The full healthcare slice
-# is 43 buildings (6 hospitals, 4 urgent care/clinic, 33 medical office).
-# Keep all hospitals and urgent care/clinic facilities (the energy-intensive,
-# "interesting" inpatient/acute-care buildings the brief flags as worth
-# commenting on), and cap medical office at the 20 largest by floor area to
-# land at 30 buildings total -- at the plan's ceiling, favoring size/data
-# completeness over an arbitrary cut.
+# The three categories hold 43 buildings (6 hospitals, 4 urgent care, 33
+# medical offices). The target was 10 to 30. Keep every hospital and urgent
+# care building, and the 20 largest medical offices, for 30 in total.
 raw_df$floor_area <- suppressWarnings(as.numeric(raw_df$floor_area))
 
 hospitals <- raw_df %>% filter(category == "Hospital (General Medical & Surgical)")
@@ -74,12 +66,12 @@ selected <- raw_df %>%
       parcel_number %in% med_office_parcels
   )
 
-cat(sprintf("\nFinal scoped portfolio: %d buildings\n", length(unique(selected$parcel_number))))
+cat(sprintf("\nBuildings selected: %d\n", length(unique(selected$parcel_number))))
 print(table(selected$category))
 
 write.csv(selected, "data/raw/healthcare_benchmark_fy2024_scoped.csv", row.names = FALSE)
 
-# Record pull metadata for the Inventory Management Plan.
+# Record the pull date, query and row counts.
 meta <- data.frame(
   item = c("download_date", "api_endpoint", "where_clause", "rows_all_healthcare",
            "buildings_all_healthcare", "rows_scoped", "buildings_scoped"),

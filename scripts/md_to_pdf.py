@@ -1,6 +1,6 @@
-"""Minimal Markdown -> PDF converter for this project's two report documents.
-Handles: #/## headings, pipe tables, bold **text**, and plain paragraphs/lists.
-Not a general-purpose converter -- written narrowly for these two files.
+"""Converts this project's two report documents from Markdown to PDF.
+It handles only the Markdown these two files use, such as headings, tables,
+lists, bold text and images.
 """
 import os
 import re

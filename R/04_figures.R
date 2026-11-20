@@ -1,6 +1,6 @@
 # 04_figures.R
-# Three report figures, built from output/emissions_results.csv.
-# Covers the 25 buildings with a complete Scope 1 + Scope 2 total.
+# Draws the three report figures from output/emissions_results.csv.
+# Uses the 25 buildings that have both Scope 1 and Scope 2.
 
 library(dplyr)
 library(ggplot2)
@@ -14,12 +14,12 @@ r <- read.csv("output/emissions_results.csv", stringsAsFactors = FALSE) %>%
 cat_labels <- c(
   "Hospital (General Medical & Surgical)" = "Hospital",
   "Medical Office" = "Medical office",
-  "Urgent Care/Clinic/Other Outpatient" = "Urgent care / clinic"
+  "Urgent Care/Clinic/Other Outpatient" = "Urgent care clinic"
 )
-r$type <- factor(cat_labels[r$category], levels = c("Hospital", "Medical office", "Urgent care / clinic"))
+r$type <- factor(cat_labels[r$category], levels = c("Hospital", "Medical office", "Urgent care clinic"))
 
-# Validated categorical slots 1-3 (CVD-checked as a set); hue follows building type.
-type_cols <- c("Hospital" = "#2a78d6", "Medical office" = "#eb6834", "Urgent care / clinic" = "#1baf7a")
+# These three colors were checked as a set for colorblind readability.
+type_cols <- c("Hospital" = "#2a78d6", "Medical office" = "#eb6834", "Urgent care clinic" = "#1baf7a")
 surface <- "#fcfcfb"
 ink <- "#0b0b0b"; ink2 <- "#52514e"; muted <- "#898781"; grid_col <- "#e1e0d9"; axis_col <- "#c3c2b7"
 
@@ -41,9 +41,9 @@ theme_inv <- theme_minimal(base_size = 11) +
     plot.margin = margin(14, 18, 10, 14)
   )
 
-src <- "Source: DataSF Existing Buildings Energy Performance Ordinance Report (96ck-qcfe), FY2024;\nEPA GHG Emission Factors Hub (Jan 2025), eGRID2023 CAMX, AR5 GWPs. 25 buildings with complete data."
+src <- "Source: DataSF Existing Buildings Energy Performance Ordinance Report (96ck-qcfe), 2024.\nEPA GHG Emission Factors Hub (Jan 2025), eGRID2023 CAMX, AR5 GWPs. 25 buildings with complete data."
 
-# --- Figure 1: share of floor area vs share of emissions -------------------
+# Figure 1: share of floor area and share of emissions
 share <- r %>%
   group_by(type) %>%
   summarise(floor = sum(floor_area), emis = sum(calc_total_co2e_mt), .groups = "drop") %>%
@@ -68,9 +68,9 @@ f1 <- ggplot(share_long, aes(x = value, y = measure, fill = type)) +
   scale_fill_manual(values = type_cols, breaks = levels(r$type)) +
   scale_x_continuous(labels = percent, expand = c(0, 0), breaks = seq(0, 1, 0.25)) +
   labs(
-    title = sprintf("%d hospitals: %s of the floor area, %s of the emissions",
+    title = sprintf("The %d hospitals have %s of the floor area and %s of the emissions",
                     n_hosp, percent(hosp_floor, 1), percent(hosp_emis, 1)),
-    subtitle = "Share of portfolio total by building type, San Francisco healthcare buildings, 2024",
+    subtitle = "Share of the total by building type, San Francisco healthcare buildings, 2024",
     x = NULL, y = NULL, caption = src
   ) +
   theme_inv +
@@ -79,7 +79,7 @@ f1 <- ggplot(share_long, aes(x = value, y = measure, fill = type)) +
 
 ggsave("output/figures/fig1_share_floor_vs_emissions.png", f1, width = 8, height = 3.4, dpi = 200, bg = surface)
 
-# --- Figure 2: carbon intensity by building --------------------------------
+# Figure 2: emissions per square foot, by building
 r <- r %>% mutate(intensity = calc_total_co2e_mt * 1000 / floor_area)
 r$bname <- reorder(tools::toTitleCase(tolower(r$building_name)), r$intensity)
 
@@ -95,9 +95,9 @@ f2 <- ggplot(r, aes(x = intensity, y = bname, fill = type)) +
   scale_fill_manual(values = type_cols) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.08))) +
   labs(
-    title = sprintf("Hospitals average %.1fx the carbon intensity of medical offices", ratio),
-    subtitle = sprintf("Scope 1 + 2 (location-based) emissions per square foot, 2024. Type averages: hospital %.1f, urgent care %.1f, medical office %.1f kg CO2e/ft²",
-                       means$m[means$type == "Hospital"], means$m[means$type == "Urgent care / clinic"],
+    title = sprintf("Hospitals emit %.1f times as much per square foot as medical offices", ratio),
+    subtitle = sprintf("Scope 1 and 2 emissions per square foot, 2024. Averages: hospital %.1f, urgent care %.1f, medical office %.1f kg CO2e",
+                       means$m[means$type == "Hospital"], means$m[means$type == "Urgent care clinic"],
                        means$m[means$type == "Medical office"]),
     x = "kg CO2e per square foot", y = NULL, caption = src
   ) +
@@ -108,7 +108,7 @@ f2 <- ggplot(r, aes(x = intensity, y = bname, fill = type)) +
 
 ggsave("output/figures/fig2_carbon_intensity_by_building.png", f2, width = 8, height = 6.2, dpi = 200, bg = surface)
 
-# --- Figure 3: reconciliation against the published EPA-estimated figure ---
+# Figure 3: difference from the city's published figure
 n_below <- sum(r$diff_pct < 0)
 med <- median(r$diff_pct)
 port_diff <- 100 * (sum(r$calc_total_co2e_mt) - sum(r$epa_reported_co2e_mt)) / sum(r$epa_reported_co2e_mt)
@@ -128,9 +128,9 @@ f3 <- ggplot(r, aes(x = diff_pct, y = bname3)) +
                      breaks = seq(-15, 0, 5)) +
   scale_y_discrete(expand = expansion(add = c(1, 1.6))) +
   labs(
-    title = sprintf("%d of %d buildings come in below the published estimate", n_below, nrow(r)),
-    subtitle = sprintf("Difference between this inventory and DataSF's EPA-estimated total, by building. Portfolio difference: %.1f%%.\nA consistent one-direction gap points to a factor difference (likely eGRID vintage), not random data error.", port_diff),
-    x = "Difference from published estimate (negative = this inventory is lower)", y = NULL, caption = src
+    title = sprintf("My figure is lower than the city's for %d of %d buildings", n_below, nrow(r)),
+    subtitle = sprintf("Difference between my total and the city's published estimate for each building. Overall: %.1f%%.\nNearly every building moves the same way, which suggests the two use different emission factors.", port_diff),
+    x = "Difference from the city's estimate (below zero means my figure is lower)", y = NULL, caption = src
   ) +
   theme_inv +
   theme(axis.text.y = element_text(size = 8.5, colour = ink2),

@@ -1,248 +1,195 @@
-# GHG Inventory: San Francisco Healthcare Building Portfolio, FY2024
+# GHG Inventory: San Francisco Healthcare Buildings, 2024
 
 Garrett Sybers | Portfolio exercise using public data | November 2026
 
-## A. Summary
+## 1. Summary
 
-This is a Scope 1 and Scope 2 greenhouse gas inventory for a 30-building sample
-of San Francisco healthcare facilities — 6 hospitals, 4 urgent care/outpatient
-clinics, and the 20 largest medical office buildings (by floor area) in the
-city's benchmarking disclosures — for calendar year 2024. Calculated emissions
-for the 25 buildings with usable activity data total **32,647 metric tons
-CO2e** (17,929 Scope 1, 14,717 Scope 2 location-based). This is **5.8% below**
-the EPA-estimated figure the city's own benchmarking data reports for the same
-buildings, a gap that is explained in Section F and is most likely due to
-electricity emission factor vintage, not a calculation error. Hospitals in the
-sample run roughly **2.7 times the energy use intensity** of medical office
-buildings (173 vs. 63 kBtu/ft²) and a comparable multiple in carbon intensity
-(9.5 vs. 3.7 kg CO2e/ft²) — expected for round-the-clock clinical operations,
-but large enough to be worth naming.
+This inventory covers Scope 1 and Scope 2 greenhouse gas emissions for 30
+San Francisco healthcare buildings in calendar year 2024. The sample has 6
+hospitals, 4 urgent care clinics and the 20 largest medical office buildings
+in the city's benchmarking data.
 
-This is a self-initiated portfolio exercise built on public data to demonstrate
-carbon accounting method, not a commissioned or verified inventory, and it has
-not been through third-party assurance.
+The 25 buildings with complete data emitted **32,647 metric tons CO2e**.
+Natural gas (Scope 1) accounts for 17,929 t and purchased electricity (Scope
+2, location-based) for 14,717 t.
 
-## B. Boundary and Scope
+The six hospitals produce 69% of these emissions on 45% of the floor area.
+Per square foot, they emit about 2.6 times as much as the medical offices.
 
-**Organizational boundary.** This inventory covers a selected sample of 30
-healthcare-sector buildings in San Francisco, drawn from the city's Existing
-Buildings Energy Performance Ordinance (Environment Code Chapter 20)
-disclosures (DataSF resource `96ck-qcfe`). It is a facility-level sample, not
-a single company's full emissions footprint — no single entity owns this
-portfolio, and the selection was made by the analyst, not by a corporate
-consolidation rule (equity share, financial control, or operational control
-over an organization). Within that sample, activity data is attributed to
-each *building*, consistent with an operational-control approach, because
-DataSF publishes metered building-level energy use rather than data separable
-by tenant versus owner.
+My total is 5.8% below the estimate the city publishes for the same
+buildings. Section 6 explains the gap. The most likely cause is that the
+city's figures use an older electricity emission factor.
 
-**Operational boundary.** Scope 1 (direct, on-site natural gas combustion)
-and Scope 2 (indirect, purchased electricity, location-based). No Scope 3
-categories are included — see Section G. No building in the final sample
-reports district steam use, so no steam factor is applied anywhere in this
-inventory (confirmed by the absence of a `district_steam_use` value for any
-of the 30 buildings pulled, not assumed).
+I built this on my own from public data to practice carbon accounting
+methods. Nobody commissioned it, and no third party has checked it.
 
-**Base year / reporting period.** Calendar year 2024, the most recent
-reporting year in the DataSF dataset with the large majority of buildings
-already filed as of this pull; 2025 submissions were still being finalized as
-of the data-pull date below.
+## 2. Boundary
 
-**Scope selection.** The full healthcare-category slice (Hospital, Urgent
-Care/Clinic/Other Outpatient, Medical Office) contained 43 buildings, above
-the project's 10-30 target. All 6 hospitals and all 4 urgent care/clinic
-facilities were kept (the energy-intensive, round-the-clock facilities most
-relevant to a healthcare system's footprint); Medical Office was capped at
-the 20 largest buildings by floor area, landing at 30 buildings total. This
-favors data completeness and scale over an arbitrary cut, and is a judgment
-call the analyst made, not a property of the data.
+**Organizational boundary.** The inventory covers 30 buildings that I
+selected from San Francisco's Existing Buildings Energy Performance Ordinance
+data (DataSF resource `96ck-qcfe`). No single company owns these buildings,
+so the inventory describes a sample of facilities. I
+assigned all energy use to the building where it was metered. This follows
+an operational control approach. The city publishes energy use per building
+and does not split it between tenants and owners.
 
-## C. Data Sources
+**Operational boundary.** Scope 1 is natural gas burned on site. Scope 2 is
+purchased electricity, reported on a location basis. Scope 3 is not
+included. None of the 30 buildings reported district steam, so no steam
+factor is used.
 
-**Activity data.** DataSF, *Existing Buildings Energy Performance Ordinance
-Report*, resource id `96ck-qcfe`, pulled 2026-11-20 via the Socrata API
-(`https://data.sfgov.org/resource/96ck-qcfe.json`). DataSF's own documentation
-describes this dataset as two linked views (Basic Info/Audit Compliance, and
-Benchmark Reports) joined on parcel number; as published and pulled, both
-views are already consolidated into one table with one row per building per
-benchmark year, so no separate join step was needed — a change from the
-originally planned method, noted here because it removes a planned QA step
-(no join-induced row loss to investigate). 43 rows matched the healthcare
-category filter for benchmark year 2024; 30 were retained after scoping (see
-Section B); `data/raw/pull_metadata.csv` in the repository records the exact
-query and row counts.
+**Reporting period.** Calendar year 2024. This is the latest year where
+nearly all buildings had filed when I pulled the data. Reports for 2025 were
+still coming in.
 
-**Emission factors.** EPA, *GHG Emission Factors Hub*, Last Modified
-January 15, 2025 (https://www.epa.gov/climateleadership/ghg-emission-factors-hub).
-- Stationary combustion, natural gas (Table 1): 53.06 kg CO2, 1.0 g CH4, and
-  0.10 g N2O per mmBtu.
-- Electricity (Table 6), eGRID2023 (published January 2025), **CAMX**
-  subregion (WECC California, which covers San Francisco), Total Output
-  Emission Factors: 436.7 lb CO2, 0.025 lb CH4, and 0.003 lb N2O per MWh.
-- Global Warming Potentials: IPCC Fifth Assessment Report (AR5), 2013 —
-  CH4 = 28, N2O = 265 (100-year, as stated in the Hub).
+**Building selection.** The three healthcare categories (hospital, urgent
+care, medical office) held 43 buildings, and I wanted 10 to 30. I kept all 6
+hospitals and all 4 urgent care clinics because they run around the clock
+and use the most energy. I then took the 20 largest medical office
+buildings. This cut is my own choice and is documented as such.
 
-No newer official EPA release was available as of the pull date. A
-non-EPA, eGRID2024-based third-party update exists (Cornerstone, via Zenodo)
-but was not used, per the project's intent to stay on a reviewable, official
-factor source.
+## 3. Data Sources
 
-**Comparison figure.** The same DataSF resource carries an EPA-estimated
-`total_ghg_emissions` value per building-year, calculated by the submitter's
-ENERGY STAR Portfolio Manager account. That figure is used only for
-reconciliation in Section F — it is not treated as this inventory's answer.
+**Energy use.** DataSF, *Existing Buildings Energy Performance Ordinance
+Report*, resource `96ck-qcfe`, pulled on 2026-11-20 through the Socrata API
+at `https://data.sfgov.org/resource/96ck-qcfe.json`. DataSF describes the
+dataset as two tables to be joined on parcel number. When I pulled it, the
+two were already merged into one table with one row per building per year,
+so no join was needed. That also meant there were no rows lost in a join to
+investigate. 43 rows matched the healthcare filter for 2024, and I kept 30.
+The file `data/raw/pull_metadata.csv` records the exact query and row
+counts.
 
-## D. Data Profiling and Quality Control
+**Emission factors.** EPA, *GHG Emission Factors Hub*, last modified January
+15, 2025.
 
-Before calculation, every building was checked for: duplicate building-year
-rows, missing or non-positive fuel/electricity values, missing year built,
-and site energy use intensity (EUI) outside a plausible range for the
-building's category (100-500 kBtu/ft² for hospitals, 25-300 for medical
-office/urgent care, based on approximate ENERGY STAR national medians).
-Issues were flagged, not deleted. The full log is in
-`output/qa_log.csv` (18 rows); in summary:
-
-| Issue | Count | Disposition |
+| Factor | Value | Source in the Hub |
 |---|---|---|
-| Benchmark non-compliance (did not report) | 3 buildings | Excluded from totals — no activity data exists to calculate from |
-| Missing/non-positive electricity | 3 buildings | Scope 2 set to NA for that building, excluded from total, kept visible in the results table |
-| Missing/non-positive natural gas | 5 buildings | Scope 1 set to NA for that building (treated as a data gap, not assumed to be zero — an all-electric building is plausible in SF) |
-| Missing year built | 1 building | Left blank; not used in any emissions calculation |
-| EUI outside plausible range | 6 buildings | Retained in the calculation and flagged for manual review; no evidence found that these are measurement errors rather than genuinely unusual buildings |
+| Natural gas, CO2 | 53.06 kg per mmBtu | Table 1 |
+| Natural gas, CH4 | 1.0 g per mmBtu | Table 1 |
+| Natural gas, N2O | 0.10 g per mmBtu | Table 1 |
+| Electricity, CO2 | 436.7 lb per MWh | Table 6, eGRID2023, CAMX subregion |
+| Electricity, CH4 | 0.025 lb per MWh | Table 6, eGRID2023, CAMX subregion |
+| Electricity, N2O | 0.003 lb per MWh | Table 6, eGRID2023, CAMX subregion |
+| GWP, CH4 | 28 | IPCC Fifth Assessment Report (AR5) |
+| GWP, N2O | 265 | IPCC Fifth Assessment Report (AR5) |
 
-No duplicate building-year rows were found in the final 30-building sample.
-Net effect: **25 of 30 buildings have a complete, calculable Scope 1 and
-Scope 2 total**; 5 are excluded from the portfolio sum and shown as NA in
-`output/emissions_results.csv` rather than silently zeroed.
+CAMX is the eGRID subregion that covers San Francisco. EPA had not released
+a newer version by the pull date. A third party (Cornerstone) has published
+factors based on eGRID2024, but I stayed with the official EPA release.
 
-## E. Results
+**Comparison figure.** The same DataSF table includes a `total_ghg_emissions`
+value for each building, calculated in ENERGY STAR Portfolio Manager when the
+owner submitted their data. I use it only to check my results in Section 6.
+
+## 4. Data Quality Checks
+
+Before calculating anything, I checked every building for duplicate rows,
+missing or zero energy values, a missing construction year, and energy use
+intensity (EUI) outside a plausible range. I set the plausible range at 100
+to 500 kBtu/ft² for hospitals and 25 to 300 for the other types, based on
+ENERGY STAR national medians. I flagged problems and did not delete any
+rows. The full log is in `output/qa_log.csv` (18 rows).
+
+| Issue | Buildings | What I did |
+|---|---|---|
+| Did not file a benchmark report | 3 | Left out of totals because there is no data to use |
+| Electricity missing or zero | 3 | Left Scope 2 blank for that building |
+| Natural gas missing or zero | 5 | Left Scope 1 blank. Some SF buildings are all electric, but I did not assume zero without evidence |
+| Construction year missing | 1 | Left blank. Not used in any calculation |
+| EUI outside the plausible range | 6 | Kept in the calculation and flagged for review. The data could be correct for an unusual building |
+
+There were no duplicate rows. In the end, 25 of the 30 buildings have both
+Scope 1 and Scope 2. The other 5 show as blank in
+`output/emissions_results.csv` and are not counted as zero.
+
+## 5. Results
 
 | | Scope 1 (natural gas) | Scope 2, location-based (electricity) | Total |
 |---|---|---|---|
 | **Metric tons CO2e** | 17,929 | 14,717 | **32,647** |
 
-25 buildings, 5,054,737 ft² of combined floor area in the calculable subset.
-Every total covers the same 25 buildings. Two all-electric buildings (1522
-Bush St, CPMC Pacific Campus Annex) have electricity data but no natural gas
-record. Their Scope 2 (about 96 t combined) is calculated per building but
-kept out of the portfolio sums, so that every total and the reconciliation
-cover the same set of buildings. Per-building detail, including the 5
-excluded buildings, is in `output/emissions_results.csv`.
+All totals cover the same 25 buildings, with 5,054,737 ft² of floor area.
+Two all-electric buildings (1522 Bush St and the CPMC Pacific Campus Annex)
+have electricity data but no gas record. Their Scope 2 (about 96 t together)
+appears in the building results but not in the totals. This keeps the totals
+and the comparison in Section 6 on the same set of buildings.
 
 ![Six hospitals account for 69% of emissions on 45% of the floor area](../output/figures/fig1_share_floor_vs_emissions.png)
 
-**Scope 2 reporting basis.** The figure above is **location-based** only, per
-the GHG Protocol Scope 2 Guidance's dual-reporting requirement — it reflects
-the average grid mix of the CAMX eGRID subregion, not the specific electricity
-product each building purchases. A **market-based** figure is not provided.
-San Francisco buildings may be enrolled in CleanPowerSF (a lower-emissions
-default/opt-up community choice program) or remain on PG&E's standard tariff,
-and that enrollment is not published at the individual-building level in this
-or any public dataset identified for this project. Producing a market-based
-number would require either (a) each building's utility account data showing
-its actual program enrollment and any renewable energy certificates retired
-against it, or (b) a residual-mix emission factor for the portion not covered
-by contractual instruments — neither of which is available here. Reporting
-only the location-based figure and stating this gap is preferable to
-asserting a market-based number without support.
+**Why there is no market-based Scope 2 figure.** The GHG Protocol asks for
+Scope 2 to be reported two ways. The location-based figure above uses the
+average emissions of the regional grid. A market-based figure would use the
+electricity each building buys. In San Francisco, a building might
+buy power from CleanPowerSF, the city's lower-carbon program, or stay on
+PG&E's standard rate. That choice is not public for individual buildings. To
+calculate a market-based figure, I would need each building's utility account
+records, including any renewable energy certificates, or a residual mix
+factor for power not covered by a contract. I didn't have either, so I left
+the figure out.
 
-**Energy and carbon intensity by building type** (calculable buildings):
+**Intensity by building type** (the 25 buildings with complete data)
 
-| Category | Mean site EUI (kBtu/ft²) | Mean carbon intensity (kg CO2e/ft²) |
-|---|---|---|
-| Hospital (General Medical & Surgical) | 172.9 | 9.52 |
-| Urgent Care/Clinic/Other Outpatient | 72.2 | 4.62 |
-| Medical Office | 62.9 | 3.67 |
+| Type | Buildings | Average EUI (kBtu/ft²) | Average emissions (kg CO2e/ft²) |
+|---|---|---|---|
+| Hospital | 6 | 172.9 | 9.52 |
+| Urgent care clinic | 3 | 82.4 | 4.62 |
+| Medical office | 16 | 65.9 | 3.67 |
 
-Hospitals in this sample run about 2.7x the energy intensity, and roughly the
-same multiple in carbon intensity, of the medical office buildings in the
-sample — consistent with 24/7 clinical operations (imaging, sterilization,
-HVAC for infection control) that medical offices don't carry. The spread within each
-type is wide, though: one hospital (601 Duboce Ave) sits at 20 kg CO2e/ft²,
-while two others (LBRACC, CPMC Monteagle) fall below several medical offices.
-Both of those were already flagged in the QA log for unusually low EUI.
+Hospitals use about 2.6 times as much energy per square foot as medical
+offices and emit about 2.6 times as much. Hospitals run imaging,
+sterilization and infection control ventilation all day and night, so a gap
+is expected. The range inside each type is wide, though. 601 Duboce Ave
+emits 20 kg CO2e/ft², while two hospitals (LBRACC and CPMC Monteagle) emit
+less per square foot than several medical offices. The QA log had already
+flagged both for low EUI.
 
 ![Carbon intensity by building](../output/figures/fig2_carbon_intensity_by_building.png)
 
-## F. Reconciliation Against the EPA-Estimated Figure
+## 6. Comparison With the City's Published Estimate
 
-DataSF's benchmarking data already carries an EPA-estimated
-`total_ghg_emissions` figure per building, calculated through ENERGY STAR
-Portfolio Manager at the time of submission. Comparing it to this inventory's
-independently calculated total, building by building, for the 25 calculable
-buildings:
-
-- Calculated portfolio total: 32,647 metric tons CO2e
-- DataSF EPA-estimated total (same 25 buildings): 34,642 metric tons CO2e
-- **Portfolio-level difference: -5.8%**
-- Per-building difference: median **-7.3%**, range -14.0% to +0.8%
-- **24 of 25 buildings** run below the EPA-estimated figure; only one
-  (Chinese Hospital, +0.8%) runs slightly above it.
+For the same 25 buildings, the city's data gives a total of 34,642 t. My
+total of 32,647 t is 5.8% lower. Building by building, the median difference
+is -7.3%, and the range is -14.0% to +0.8%. My figure is lower for 24 of the
+25 buildings. Chinese Hospital is the only one where it is higher, by 0.8%.
 
 ![Reconciliation against the published estimate](../output/figures/fig3_reconciliation.png)
 
-The direction and consistency of this gap — nearly every building running a
-similar few percent below the published estimate, rather than a scatter of
-over- and under-estimates — points to a **systematic factor difference**
-rather than random data noise. The leading candidate: Portfolio Manager
-calculates a building's GHG emissions using the eGRID electricity factor
-vintage current at the time that building's energy was benchmarked, which for
-most of this portfolio's submissions predates the eGRID2023 (Jan. 2025)
-factors used here. California's CAMX grid has gotten measurably cleaner
-across recent eGRID vintages as renewable generation has grown, so an older
-vintage would assign more CO2 per MWh than eGRID2023 does — which would
-produce exactly this pattern: a higher historical estimate, consistently,
-across nearly every electricity-consuming building. Other candidates that
-were considered and are less likely to explain the full gap: a different GWP
-set (Portfolio Manager has historically used AR4 values, under which CH4 is
-*lower* and N2O is *higher* than the AR5 values used here — the net effect on
-a natural-gas-and-electricity-only inventory is small, since N2O's
-contribution is minor) and differences in how any minor fuel categories are
-handled (not applicable here, as no steam or other fuel appears in this
-sample). This analysis cannot confirm the exact eGRID vintage Portfolio
-Manager used for each submission without access to each building's
-underlying ENERGY STAR account, so this is presented as the best-supported
-explanation available from public data, not a certainty.
+Random errors in the data would push some buildings up and some down. Here
+nearly every building moves the same way by a similar amount, which suggests
+the two calculations use different emission factors. My best explanation is
+that the city's figures were calculated with an eGRID version older than
+eGRID2023. California's grid has become cleaner with each eGRID release, so
+an older factor would assign more CO2 to each MWh. That would make the city's
+estimate higher for almost every building, which is the pattern in the
+chart.
 
-## G. Uncertainty and Limitations
+I also considered whether different global warming potentials could explain
+the gap. If Portfolio Manager uses the older AR4 values, it would rate
+methane lower and nitrous oxide higher than I do. In this inventory those
+two gases are a small share of the total, so the effect would be small.
 
-In rough order of how much each would move the final number:
+Without access to each building's Portfolio Manager account, I can't confirm
+which eGRID version each report used. The factor explanation is the one that
+best fits the public data, but I have not proven it.
 
-1. **Self-reported, unverified meter data.** All activity data originates
-   from each building owner's benchmarking submission. Nothing in this
-   project independently confirms meter readings against utility bills.
-   This is the largest source of uncertainty and is inherent to the data
-   source, not something this analysis can resolve.
-2. **Excluded buildings understate the true portfolio total.** 5 of 30
-   buildings (17%) have no usable Scope 1/2 data and are excluded rather
-   than estimated. If their emissions resemble the portfolio average per
-   square foot, the true 30-building total would run several thousand
-   metric tons CO2e higher than the 32,647 reported here.
-3. **Missing market-based Scope 2.** As discussed in Section E, no
-   building-level renewable energy program enrollment is public. The
-   location-based figure may overstate or understate a given building's
-   actual contractual emissions depending on its CleanPowerSF status.
-4. **Emission factor vintage.** As discussed in Section F, this inventory
-   uses a single factor vintage (EPA Hub, Jan. 2025 / eGRID2023) applied
-   uniformly across the year. A year-round average factor cannot capture
-   within-year grid mix changes, and the reconciliation in Section F
-   suggests vintage choice alone can move a building's total by roughly
-   5-15%.
+## 7. Uncertainty and Limits
 
-**On precision.** Results above are rounded to whole metric tons at the
-portfolio level and one decimal place per building in the underlying CSV.
-Reporting a number like "32,646.62" would imply a level of certainty the
-underlying self-reported meter data and averaged regional emission factors
-do not support.
+These are listed roughly in order of how much they could change the total.
 
-## H. Repository Contents
+1. **Self-reported meter data.** All energy figures come from the owners'
+   own benchmarking reports. I had no way to check them against utility
+   bills.
+2. **Missing buildings.** 5 of the 30 buildings (17%) are left out because
+   they lack data. If they emit at the sample's average rate per square
+   foot, the true 30-building total would be several thousand tons higher.
+3. **No market-based Scope 2.** Without each building's power purchase
+   records, the location-based figure may be too high or too low for a
+   given building.
+4. **Emission factor version.** I used one set of factors for the whole
+   year. In Section 6, my figures differ from the city's by up to 14% for a
+   single building, and the factor version is the most likely cause.
 
-- `R/01_download_data.R` — pulls and scopes the DataSF activity data
-- `R/02_profile_qa.R` — produces `output/qa_log.csv`
-- `R/03_calculate_emissions.R` — Scope 1/2 calculation and reconciliation,
-  produces `output/emissions_results.csv` and `output/portfolio_summary.csv`
-- `R/04_figures.R` — produces the three figures in `output/figures/`
-- `output/qa_log.csv`, `output/emissions_results.csv`,
-  `output/portfolio_summary.csv`
-- `report/inventory_report.md` (this document) and `report/inventory_report.pdf`
-- `report/inventory_management_plan.md` / `.pdf`
+**Rounding.** I round portfolio totals to whole tons. Reporting a figure like
+32,646.62 would claim more precision than self-reported meter data and
+regional average factors can support.
