@@ -25,14 +25,6 @@ urgent care/outpatient clinics, 20 medical office buildings) for calendar
 year 2024, built from San Francisco's building energy benchmarking
 disclosures and EPA/eGRID emission factors.
 
-## Why this exists
-
-Carbon accounting job postings (e.g., utility and health-system GHG/ESG
-reporting roles) ask for experience maintaining emissions inventories,
-calculation support, QA logs, and inventory management plans — the kind of
-work a reviewer can't verify from a resume line alone. This repository is
-that evidence: a method a reader can open, check, and reproduce.
-
 ## What's here
 
 - **[`report/inventory_report.pdf`](report/inventory_report.pdf)** — the
