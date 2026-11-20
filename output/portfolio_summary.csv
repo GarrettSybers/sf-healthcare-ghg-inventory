@@ -3,7 +3,7 @@
 "n_buildings_calculable",25
 "n_buildings_excluded",5
 "scope1_co2e_mt",17929.4
-"scope2_co2e_mt",14813.2
-"total_calculated_co2e_mt",32742.6
+"scope2_co2e_mt",14717.2
+"total_calculated_co2e_mt",32646.6
 "total_epa_estimated_co2e_mt",34641.9
-"portfolio_diff_pct",-5.48
+"portfolio_diff_pct",-5.76

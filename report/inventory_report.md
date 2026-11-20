@@ -8,8 +8,8 @@ This is a Scope 1 and Scope 2 greenhouse gas inventory for a 30-building sample
 of San Francisco healthcare facilities — 6 hospitals, 4 urgent care/outpatient
 clinics, and the 20 largest medical office buildings (by floor area) in the
 city's benchmarking disclosures — for calendar year 2024. Calculated emissions
-for the 25 buildings with usable activity data total **32,743 metric tons
-CO2e** (17,929 Scope 1, 14,813 Scope 2 location-based). This is **5.5% below**
+for the 25 buildings with usable activity data total **32,647 metric tons
+CO2e** (17,929 Scope 1, 14,717 Scope 2 location-based). This is **5.8% below**
 the EPA-estimated figure the city's own benchmarking data reports for the same
 buildings, a gap that is explained in Section F and is most likely due to
 electricity emission factor vintage, not a calculation error. Hospitals in the
@@ -119,11 +119,17 @@ Scope 2 total**; 5 are excluded from the portfolio sum and shown as NA in
 
 | | Scope 1 (natural gas) | Scope 2, location-based (electricity) | Total |
 |---|---|---|---|
-| **Metric tons CO2e** | 17,929 | 14,813 | **32,743** |
+| **Metric tons CO2e** | 17,929 | 14,717 | **32,647** |
 
-25 buildings, 4,845,858 ft² of combined floor area in the calculable subset.
-Per-building detail, including the 5 excluded buildings (shown as NA), is in
-`output/emissions_results.csv`.
+25 buildings, 5,054,737 ft² of combined floor area in the calculable subset.
+Every total covers the same 25 buildings. Two all-electric buildings (1522
+Bush St, CPMC Pacific Campus Annex) have electricity data but no natural gas
+record. Their Scope 2 (about 96 t combined) is calculated per building but
+kept out of the portfolio sums, so that every total and the reconciliation
+cover the same set of buildings. Per-building detail, including the 5
+excluded buildings, is in `output/emissions_results.csv`.
+
+![Six hospitals account for 69% of emissions on 45% of the floor area](../output/figures/fig1_share_floor_vs_emissions.png)
 
 **Scope 2 reporting basis.** The figure above is **location-based** only, per
 the GHG Protocol Scope 2 Guidance's dual-reporting requirement — it reflects
@@ -151,7 +157,12 @@ asserting a market-based number without support.
 Hospitals in this sample run about 2.7x the energy intensity, and roughly the
 same multiple in carbon intensity, of the medical office buildings in the
 sample — consistent with 24/7 clinical operations (imaging, sterilization,
-HVAC for infection control) that medical offices don't carry.
+HVAC for infection control) that medical offices don't carry. The spread within each
+type is wide, though: one hospital (601 Duboce Ave) sits at 20 kg CO2e/ft²,
+while two others (LBRACC, CPMC Monteagle) fall below several medical offices.
+Both of those were already flagged in the QA log for unusually low EUI.
+
+![Carbon intensity by building](../output/figures/fig2_carbon_intensity_by_building.png)
 
 ## F. Reconciliation Against the EPA-Estimated Figure
 
@@ -161,12 +172,14 @@ Portfolio Manager at the time of submission. Comparing it to this inventory's
 independently calculated total, building by building, for the 25 calculable
 buildings:
 
-- Calculated portfolio total: 32,743 metric tons CO2e
+- Calculated portfolio total: 32,647 metric tons CO2e
 - DataSF EPA-estimated total (same 25 buildings): 34,642 metric tons CO2e
-- **Portfolio-level difference: -5.5%**
+- **Portfolio-level difference: -5.8%**
 - Per-building difference: median **-7.3%**, range -14.0% to +0.8%
 - **24 of 25 buildings** run below the EPA-estimated figure; only one
   (Chinese Hospital, +0.8%) runs slightly above it.
+
+![Reconciliation against the published estimate](../output/figures/fig3_reconciliation.png)
 
 The direction and consistency of this gap — nearly every building running a
 similar few percent below the published estimate, rather than a scatter of
@@ -204,7 +217,7 @@ In rough order of how much each would move the final number:
    buildings (17%) have no usable Scope 1/2 data and are excluded rather
    than estimated. If their emissions resemble the portfolio average per
    square foot, the true 30-building total would run several thousand
-   metric tons CO2e higher than the 32,743 reported here.
+   metric tons CO2e higher than the 32,647 reported here.
 3. **Missing market-based Scope 2.** As discussed in Section E, no
    building-level renewable energy program enrollment is public. The
    location-based figure may overstate or understate a given building's
@@ -218,7 +231,7 @@ In rough order of how much each would move the final number:
 
 **On precision.** Results above are rounded to whole metric tons at the
 portfolio level and one decimal place per building in the underlying CSV.
-Reporting a number like "32,743.18" would imply a level of certainty the
+Reporting a number like "32,646.62" would imply a level of certainty the
 underlying self-reported meter data and averaged regional emission factors
 do not support.
 
@@ -228,6 +241,7 @@ do not support.
 - `R/02_profile_qa.R` — produces `output/qa_log.csv`
 - `R/03_calculate_emissions.R` — Scope 1/2 calculation and reconciliation,
   produces `output/emissions_results.csv` and `output/portfolio_summary.csv`
+- `R/04_figures.R` — produces the three figures in `output/figures/`
 - `output/qa_log.csv`, `output/emissions_results.csv`,
   `output/portfolio_summary.csv`
 - `report/inventory_report.md` (this document) and `report/inventory_report.pdf`

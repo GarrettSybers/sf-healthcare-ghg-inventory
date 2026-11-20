@@ -2,15 +2,19 @@
 Handles: #/## headings, pipe tables, bold **text**, and plain paragraphs/lists.
 Not a general-purpose converter -- written narrowly for these two files.
 """
+import os
 import re
 import sys
 from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 )
+
+BASE_DIR = "."
 
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name="H1", fontSize=16, spaceAfter=10, spaceBefore=4, fontName="Helvetica-Bold"))
@@ -21,6 +25,7 @@ styles.add(ParagraphStyle(name="Meta", parent=styles["Normal"], fontSize=9, text
 
 
 def inline(text):
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
     text = re.sub(r"(?<!\*)\*([^*]+?)\*(?!\*)", r"<i>\1</i>", text)
     text = re.sub(r"`(.+?)`", r"<font face='Courier'>\1</font>", text)
@@ -58,6 +63,16 @@ def build_story(md_text):
             continue
         if stripped.startswith("### "):
             story.append(Paragraph(inline(stripped[4:]), styles["H3"]))
+            i += 1
+            continue
+        img = re.match(r"^!\[[^\]]*\]\(([^)]+)\)$", stripped)
+        if img:
+            path = os.path.join(BASE_DIR, img.group(1))
+            w, h = ImageReader(path).getSize()
+            width = 6.5 * inch
+            story.append(Spacer(1, 4))
+            story.append(Image(path, width=width, height=width * h / w))
+            story.append(Spacer(1, 10))
             i += 1
             continue
         if first and "|" not in stripped:
@@ -110,6 +125,8 @@ def build_story(md_text):
 
 
 def convert(md_path, pdf_path):
+    global BASE_DIR
+    BASE_DIR = os.path.dirname(os.path.abspath(md_path))  # image paths are relative to the .md file
     with open(md_path, "r", encoding="utf-8") as f:
         text = f.read()
     doc = SimpleDocTemplate(pdf_path, pagesize=LETTER,

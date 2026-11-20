@@ -82,10 +82,15 @@ n_total <- nrow(results)
 n_calculable <- sum(!is.na(results$calc_total_co2e_mt))
 n_excluded <- n_total - n_calculable
 
-portfolio_scope1 <- sum(results$scope1_co2e_mt, na.rm = TRUE)
-portfolio_scope2 <- sum(results$scope2_co2e_mt, na.rm = TRUE)
+# Portfolio totals use only buildings with BOTH scopes, so every total and the
+# reconciliation cover the same building set.
+complete <- results[!is.na(results$calc_total_co2e_mt), ]
+portfolio_scope1 <- sum(complete$scope1_co2e_mt)
+portfolio_scope2 <- sum(complete$scope2_co2e_mt)
 portfolio_total  <- portfolio_scope1 + portfolio_scope2
-portfolio_epa    <- sum(results$epa_reported_co2e_mt[!is.na(results$calc_total_co2e_mt)], na.rm = TRUE)
+portfolio_epa    <- sum(complete$epa_reported_co2e_mt)
+partial_scope2   <- sum(results$scope2_co2e_mt[is.na(results$calc_total_co2e_mt)], na.rm = TRUE)
+cat(sprintf("Scope 2 from buildings missing Scope 1 (excluded from totals): %.0f t\n", partial_scope2))
 portfolio_diff_pct <- 100 * (portfolio_total - portfolio_epa) / portfolio_epa
 
 cat(sprintf("\nBuildings in portfolio: %d (calculable: %d, excluded for missing/non-reported data: %d)\n",
